@@ -44,7 +44,7 @@ export const authApi = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, fullName, password, mobile, gender, dateOfBirth }),
+      body: JSON.stringify({ email, password, fullName, mobile, gender, dateOfBirth }),
     });
 
     const data = (await response.json()) as ApiResponse<LoginResponse> & { token?: string };
