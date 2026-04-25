@@ -173,6 +173,7 @@ async function sendEmail(
   try {
     if (emailService === 'resend') {
       // Using Resend API (npm install resend)
+      try {
       const { Resend } = require('resend');
       const resend = new Resend(process.env.RESEND_API_KEY);
       
@@ -183,6 +184,10 @@ async function sendEmail(
         html: htmlContent,
         text: textContent,
       });
+         } catch (moduleError) {
+        console.warn('⚠️ Resend module not installed. Install with: npm install resend');
+        console.error('Email service error:', moduleError);
+      }
     } else if (emailService === 'smtp' || emailService === 'gmail') {
       // Using Nodemailer (npm install nodemailer)
       const nodemailer = require('nodemailer');
@@ -220,6 +225,7 @@ async function sendEmail(
       });
     } else if (emailService === 'mailgun') {
       // Using Mailgun API
+       try {
       const mailgun = require('mailgun.js');
       const mg = mailgun.client({
         username: 'api',
@@ -233,6 +239,10 @@ async function sendEmail(
         html: htmlContent,
         text: textContent,
       });
+           } catch (moduleError) {
+        console.warn('⚠️ Mailgun.js module not installed. Install with: npm install mailgun.js');
+        console.error('Email service error:', moduleError);
+      }
     } else {
       throw new Error(`Unknown email service: ${emailService}`);
     }
