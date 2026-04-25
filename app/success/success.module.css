@@ -1,0 +1,57 @@
+/* Responsive centering for success page */
+.successWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f6fff6;
+  padding: 2rem;
+}
+
+.successTitle {
+  color: #27ae60;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.successMessage {
+  color: #333;
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.successHomeLink {
+  padding: 0.75rem 2rem;
+  background: #27ae60;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.1);
+  transition: background 0.2s;
+}
+.successHomeLink:hover {
+  background: #219150;
+}
+
+@media (max-width: 600px) {
+  .successTitle {
+    font-size: 2rem;
+  }
+  .successMessage {
+    font-size: 1rem;
+  }
+  .successHomeLink {
+    width: 100%;
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.75rem 0;
+  }
+  .successWrapper {
+    padding: 1rem;
+  }
+}
