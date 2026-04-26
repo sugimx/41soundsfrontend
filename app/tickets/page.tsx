@@ -1,12 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import { pricingData } from '@/data/pricing';
-import { ArrowLeft, Minus, Plus, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Minus, Plus, ShoppingCart, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
+import Script from 'next/script';
+import { paymentApi } from '@/lib/api';
+
+interface CashfreeCheckoutOptions {
+  paymentSessionId: string;
+  redirectTarget?: string;
+}
+
+interface CashfreeInstance {
+  checkout: (options: CashfreeCheckoutOptions) => Promise<any>;
+}
+
+declare global {
+  var Cashfree: ((config: { mode: string }) => CashfreeInstance) | undefined;
+}
 
 interface CartItem {
   name: string;
@@ -16,10 +31,20 @@ interface CartItem {
 
 export default function TicketsPage() {
   const router = useRouter();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState('');
+  const [cashfreeReady, setCashfreeReady] = useState(false);
+
+  // Initialize Cashfree SDK when script loads
+  const handleCashfreeLoad = () => {
+    if (typeof window !== 'undefined' && typeof window.Cashfree === 'function') {
+      setCashfreeReady(true);
+    }
+  };
 
   // Redirect to login if not authenticated
   if (!token) {
@@ -90,14 +115,73 @@ export default function TicketsPage() {
   const tax = subtotal * 0.18;
   const total = subtotal + tax;
 
-  const handleCheckout = () => {
-    // Store cart in localStorage for checkout page
-    localStorage.setItem('cart', JSON.stringify(cart));
-    router.push('/checkout');
+  const handlePayment = async () => {
+    if (!cashfreeReady) {
+      setError('Cashfree SDK is still loading. Please try again.');
+      return;
+    }
+
+    if (!user) {
+      setError('User information not available. Please log in again.');
+      return;
+    }
+
+    setIsProcessing(true);
+    setError('');
+
+    try {
+      // Step 1: Create payment order on backend
+      const paymentResponse = await paymentApi.createOrder(
+        token,
+        total,
+        'Ticket purchase',
+        {
+          email: user.email,
+          phone: user.mobile || user.phone || '9999999999',
+        }
+      );
+
+      // Step 2: Verify we got the payment session ID
+      const paymentSessionId = paymentResponse?.paymentSessionId || paymentResponse?.payment_session_id;
+      
+      if (!paymentSessionId) {
+        throw new Error('Failed to create payment session. Please try again.');
+      }
+
+      // Step 3: Initialize Cashfree SDK
+      if (!window.Cashfree || typeof window.Cashfree !== 'function') {
+        throw new Error('Cashfree SDK not loaded. Please refresh and try again.');
+      }
+
+      const cashfree = window.Cashfree({
+        mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox',
+      });
+
+      // Step 4: Open Cashfree checkout
+      const checkoutOptions: CashfreeCheckoutOptions = {
+        paymentSessionId: paymentSessionId,
+        redirectTarget: '_self',
+      };
+
+      // Open the checkout - this will redirect on success
+      await cashfree.checkout(checkoutOptions);
+    } catch (err: any) {
+      console.error('Payment error:', err);
+      setError(err.message || 'Failed to process payment. Please try again.');
+      setIsProcessing(false);
+    }
   };
 
   return (
-    <div className="relative min-h-screen bg-black px-4 py-12 overflow-hidden">
+    <>
+      {/* Cashfree SDK Script */}
+      <Script
+        src="https://sdk.cashfree.com/js/v3/cashfree.js"
+        onLoad={handleCashfreeLoad}
+        strategy="afterInteractive"
+      />
+
+      <div className="relative min-h-screen bg-black px-4 py-12 overflow-hidden">
       {/* Gradient blur background */}
       <div className="absolute top-0 -z-10 left-1/3 w-96 h-96 bg-pink-600 blur-[300px] opacity-30"></div>
       <div className="absolute bottom-0 -z-10 right-1/4 w-96 h-96 bg-pink-500 blur-[300px] opacity-20"></div>
@@ -203,6 +287,18 @@ export default function TicketsPage() {
             <div className="bg-gray-900/30 border border-gray-800 rounded-lg p-6 backdrop-blur-sm sticky top-24">
               <h3 className="text-xl font-bold text-white mb-6">Order Summary</h3>
 
+              {error && (
+                <motion.div
+                  className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+                  <p className="text-red-400 text-sm">{error}</p>
+                </motion.div>
+              )}
+
               {cart.length === 0 ? (
                 <p className="text-gray-400 text-center py-8">Your cart is empty</p>
               ) : (
@@ -263,10 +359,11 @@ export default function TicketsPage() {
                   </div>
 
                   <button
-                    onClick={handleCheckout}
-                    className="w-full mt-6 px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg transition-colors active:scale-95"
+                    onClick={handlePayment}
+                    disabled={isProcessing || !cashfreeReady}
+                    className="w-full mt-6 px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg transition-colors active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Proceed to Checkout
+                    {!cashfreeReady ? 'Loading Payment...' : isProcessing ? 'Processing...' : `Pay Now ₹${total.toFixed(2)}`}
                   </button>
                 </>
               )}
@@ -275,5 +372,6 @@ export default function TicketsPage() {
         </div>
       </motion.div>
     </div>
+    </>
   );
 }
