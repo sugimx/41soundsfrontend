@@ -33,6 +33,8 @@ export interface UserProfile {
 export interface PaymentCreateResponse {
   orderId: string;
   paymentLink?: string;
+  paymentSessionId?: string;
+  payment_session_id?: string;
   status: string;
 }
 
@@ -158,8 +160,8 @@ export const authApi = {
 
 // Payment API calls
 export const paymentApi = {
-  createOrder: async (token: string, amount: number, orderId: string, customerDetails: any) => {
-    const response = await fetch(`${API_BASE_URL}/api/payments/create`, {
+  createOrder: async (token: string, amount: number, description: string, metadata: { email: string; phone: string }) => {
+    const response = await fetch(`${API_BASE_URL}/api/payments/initiate`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -167,14 +169,14 @@ export const paymentApi = {
       },
       body: JSON.stringify({
         amount,
-        orderId,
-        customerDetails,
+        description,
+        metadata,
       }),
     });
 
     const data = (await response.json()) as ApiResponse<PaymentCreateResponse>;
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to create payment order');
+      throw new Error(data.message || 'Failed to initiate payment');
     }
     return data.data;
   },

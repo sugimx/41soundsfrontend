@@ -7,11 +7,26 @@ import { paymentApi } from '@/lib/api';
 import { AlertCircle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
+import Script from 'next/script';
 
 interface CheckoutItem {
   name: string;
   price: number;
   quantity: number;
+}
+
+interface CashfreeCheckoutOptions {
+  paymentSessionId: string;
+  redirectTarget?: string;
+}
+
+// Type for Cashfree SDK
+interface CashfreeInstance {
+  checkout: (options: CashfreeCheckoutOptions) => Promise<any>;
+}
+
+declare global {
+  var Cashfree: ((config: { mode: string }) => CashfreeInstance) | undefined;
 }
 
 export default function CheckoutPage() {
@@ -21,6 +36,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [items, setItems] = useState<CheckoutItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [cashfreeReady, setCashfreeReady] = useState(false);
 
   // Load cart from localStorage on mount
   useEffect(() => {
@@ -34,6 +50,13 @@ export default function CheckoutPage() {
     }
     setIsLoading(false);
   }, []);
+
+  // Initialize Cashfree SDK when script loads
+  const handleCashfreeLoad = () => {
+    if (typeof window !== 'undefined' && typeof window.Cashfree === 'function') {
+      setCashfreeReady(true);
+    }
+  };
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = subtotal * 0.18; // 18% GST
@@ -99,40 +122,67 @@ export default function CheckoutPage() {
   }
 
   const handlePayment = async () => {
+    if (!cashfreeReady) {
+      setError('Cashfree SDK is still loading. Please try again.');
+      return;
+    }
+
     setIsProcessing(true);
     setError('');
 
     try {
-      // Generate unique order ID
-      const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-      // Create payment order
+      // Step 1: Create payment order on backend
       const paymentResponse = await paymentApi.createOrder(
         token,
         total,
-        orderId,
+        'Checkout for tickets',
         {
-          name: user.fullName || user.name || 'N/A',
           email: user.email,
           phone: user.mobile || user.phone || '9999999999',
         }
       );
 
-      // If payment link is returned, redirect to it
-      if (paymentResponse && paymentResponse.paymentLink) {
-        window.location.href = paymentResponse.paymentLink;
-      } else if (paymentResponse) {
-        // Handle alternative payment flow
-        router.push(`/payment-status/${paymentResponse.orderId}`);
+      // Step 2: Verify we got the payment session ID
+      const paymentSessionId = paymentResponse?.paymentSessionId || paymentResponse?.payment_session_id;
+      
+      if (!paymentSessionId) {
+        throw new Error('Failed to create payment session. Please try again.');
       }
+
+      // Step 3: Initialize Cashfree SDK
+      if (!window.Cashfree || typeof window.Cashfree !== 'function') {
+        throw new Error('Cashfree SDK not loaded. Please refresh and try again.');
+      }
+
+      const cashfree = window.Cashfree({
+        mode: process.env.NEXT_PUBLIC_CASHFREE_MODE || 'sandbox',
+      });
+
+      // Step 4: Open Cashfree checkout
+      const checkoutOptions: CashfreeCheckoutOptions = {
+        paymentSessionId: paymentSessionId,
+        redirectTarget: '_self', // Redirect in same window after payment
+      };
+
+      // Open the checkout - this will redirect on success
+      await cashfree.checkout(checkoutOptions);
     } catch (err: any) {
+      console.error('Payment error:', err);
       setError(err.message || 'Failed to process payment. Please try again.');
       setIsProcessing(false);
     }
   };
 
   return (
-    <div className="relative min-h-screen bg-black px-4 py-12 overflow-hidden">
+    <>
+      {/* Cashfree SDK Script */}
+      <Script
+        src="https://sdk.cashfree.com/js/v3/cashfree.js"
+        onLoad={handleCashfreeLoad}
+        strategy="afterInteractive"
+      />
+
+      <div className="relative min-h-screen bg-black px-4 py-12 overflow-hidden">
       {/* Gradient blur background */}
       <div className="absolute top-0 -z-10 left-1/3 w-96 h-96 bg-pink-600 blur-[300px] opacity-30"></div>
       <div className="absolute bottom-0 -z-10 right-1/4 w-96 h-96 bg-pink-500 blur-[300px] opacity-20"></div>
@@ -280,10 +330,10 @@ export default function CheckoutPage() {
               {/* Pay Button */}
               <button
                 onClick={handlePayment}
-                disabled={isProcessing}
+                disabled={isProcessing || !cashfreeReady}
                 className="w-full py-3 bg-pink-600 hover:bg-pink-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-3 active:scale-95"
               >
-                {isProcessing ? 'Processing...' : `Pay ₹${total.toFixed(2)}`}
+                {!cashfreeReady ? 'Loading Cashfree...' : isProcessing ? 'Processing...' : `Pay ₹${total.toFixed(2)}`}
               </button>
 
               {/* Security Info */}
@@ -306,6 +356,7 @@ export default function CheckoutPage() {
           </motion.div>
         </div>
       </motion.div>
-    </div>
+      </div>
+    </>
   );
 }
