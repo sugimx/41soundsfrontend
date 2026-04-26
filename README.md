@@ -27,14 +27,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the website.
 
-## Sections
-
-- Hero - Event introduction and date
-- Features - Concert highlights
-- Tickets - Pricing tiers (General, VIP, Platinum)
-- Seat - Seating arrangement
-- Contact - Phone, Email, Instagram
-
 ## Brand
 
 **41sounds.com**
