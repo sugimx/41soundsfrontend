@@ -25,17 +25,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedToken = tokenStorage.getToken();
     if (storedToken) {
       setToken(storedToken);
-      // Optionally fetch user profile
+      // Fetch user profile
       authApi
         .getProfile(storedToken)
         .then((user) => {
+          console.log('✅ User profile loaded:', user);
           if (user) {
             setUser(user);
           }
         })
-        .catch(() => {
-          tokenStorage.removeToken();
-          setToken(null);
+        .catch((err) => {
+          console.error('❌ Failed to fetch profile:', err);
+          // Don't clear token immediately - might be temporary error
+          // tokenStorage.removeToken();
+          // setToken(null);
         })
         .finally(() => setIsLoading(false));
     } else {

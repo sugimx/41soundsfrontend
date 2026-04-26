@@ -4,6 +4,7 @@ import { useAuth } from '@/lib/auth-context';
 import { authApi, paymentApi } from '@/lib/api';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AlertCircle, ArrowLeft, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -21,6 +22,7 @@ interface Payment {
 
 export default function ProfilePage() {
   const { user, token, isLoading, updateProfile, logout } = useAuth();
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
@@ -30,10 +32,27 @@ export default function ProfilePage() {
   const [paymentsError, setPaymentsError] = useState('');
 
   const [formData, setFormData] = useState({
-    fullName: user?.fullName || user?.name || '',
-    email: user?.email || '',
-    mobile: user?.mobile || user?.phone || '',
+    fullName: '',
+    email: '',
+    mobile: '',
   });
+
+  // Update formData whenever user changes
+  useEffect(() => {
+    if (user) {
+      const name = user?.fullName || user?.name || '';
+      const email = user?.email || '';
+      const phone = user?.mobile || user?.phone || '';
+      
+      console.log('✅ Syncing user to formData:', { fullName: name, email, mobile: phone });
+      
+      setFormData({
+        fullName: name,
+        email: email,
+        mobile: phone,
+      });
+    }
+  }, [user]);
 
   // Fetch payment history
   useEffect(() => {
@@ -95,6 +114,17 @@ export default function ProfilePage() {
     );
   }
 
+  // Wait for formData to be populated with user info
+  if (!formData.email) {
+    return (
+      <div className="relative min-h-screen bg-black flex items-center justify-center px-4 overflow-hidden">
+        <div className="absolute top-0 -z-10 left-1/3 w-96 h-96 bg-pink-600 blur-[300px] opacity-30"></div>
+        <div className="absolute bottom-0 -z-10 right-1/4 w-96 h-96 bg-pink-500 blur-[300px] opacity-20"></div>
+        <p className="text-gray-400">Syncing profile data...</p>
+      </div>
+    );
+  }
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -139,8 +169,8 @@ export default function ProfilePage() {
     });
   };
 
-  const getDisplayName = () => user?.fullName || user?.name || 'N/A';
-  const getDisplayPhone = () => user?.mobile || user?.phone || 'Not provided';
+  const getDisplayName = () => formData.fullName || 'Not provided';
+  const getDisplayPhone = () => formData.mobile || 'Not provided';
 
   const handleSave = async () => {
     setError('');
@@ -158,6 +188,15 @@ export default function ProfilePage() {
       setError(err.message || 'Failed to update profile');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/');
+    } catch (err) {
+      console.error('Logout failed:', err);
     }
   };
 
@@ -292,11 +331,7 @@ export default function ProfilePage() {
               <button
                 onClick={() => {
                   setIsEditing(false);
-                  setFormData({
-                    fullName: user.fullName || user.name || '',
-                    email: user.email,
-                    mobile: user.mobile || user.phone || '',
-                  });
+                  // Reset to current user data (which is now synced in formData)
                 }}
                 disabled={isSaving}
                 className="flex-1 px-4 py-3 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
@@ -411,7 +446,7 @@ export default function ProfilePage() {
 
         {/* Logout Button */}
         <motion.button
-          onClick={logout}
+          onClick={handleLogout}
           className="w-full px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg transition-colors active:scale-95"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
+import { LogOut } from 'lucide-react';
 
 export function NavbarAuthSection() {
   const [isMounted, setIsMounted] = useState(false);
-  const { user, token, isLoading } = useAuth();
+  const { user, token, isLoading, logout } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -24,10 +27,15 @@ export function NavbarAuthSection() {
 
   // Desktop view
   if (token && user) {
-    const userInitial = (user.fullName || user.name || 'U')
-      .split(' ')[0]
-      .charAt(0)
-      .toUpperCase();
+    const displayName = user.fullName || user.name;
+    const userInitial = displayName
+      ? displayName.trim().split(' ')[0].charAt(0).toUpperCase()
+      : 'U';
+
+    const handleLogout = async () => {
+      await logout();
+      router.push('/');
+    };
 
     return (
       <div className="hidden md:flex items-center gap-4">
@@ -39,9 +47,16 @@ export function NavbarAuthSection() {
             {userInitial}
           </div>
           <span className="text-sm text-white hidden lg:block">
-            {user.fullName || user.name}
+            {displayName || 'Profile'}
           </span>
         </Link>
+        <button
+          onClick={handleLogout}
+          className="text-gray-400 hover:text-red-500 transition-colors p-2"
+          title="Logout"
+        >
+          <LogOut size={20} />
+        </button>
       </div>
     );
   }
@@ -67,7 +82,8 @@ export function NavbarAuthSection() {
 
 export function NavbarMobileAuthSection({ onClose }: { onClose?: () => void }) {
   const [isMounted, setIsMounted] = useState(false);
-  const { user, token, isLoading } = useAuth();
+  const { user, token, isLoading, logout } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setIsMounted(true);
@@ -80,10 +96,18 @@ export function NavbarMobileAuthSection({ onClose }: { onClose?: () => void }) {
 
   // Mobile view - authenticated
   if (token && user) {
+    const displayName = user.fullName || user.name || 'User';
+    
+    const handleLogout = async () => {
+      await logout();
+      onClose?.();
+      router.push('/');
+    };
+
     return (
       <>
         <p className="text-sm text-gray-400">
-          Signed in as <span className="text-white font-medium">{user.fullName || user.name}</span>
+          Signed in as <span className="text-white font-medium">{displayName}</span>
         </p>
         <Link 
           href="/profile" 
@@ -92,6 +116,13 @@ export function NavbarMobileAuthSection({ onClose }: { onClose?: () => void }) {
         >
           Profile
         </Link>
+        <button
+          onClick={handleLogout}
+          className="px-4 py-2 bg-red-600 hover:bg-red-700 active:scale-95 transition-all rounded-full flex items-center gap-2"
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
       </>
     );
   }
