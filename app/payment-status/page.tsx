@@ -68,7 +68,7 @@ function PaymentStatusContent() {
 
             <div className="space-y-3">
               <Link
-                href="/checkout"
+                href="/tickets"
                 className="block px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-colors"
               >
                 Try Again
