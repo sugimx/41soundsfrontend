@@ -1,11 +1,23 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
-import { authApi } from '@/lib/api';
-import { useState } from 'react';
+import { authApi, paymentApi } from '@/lib/api';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { AlertCircle, ArrowLeft } from 'lucide-react';
+import { AlertCircle, ArrowLeft, CheckCircle, Clock, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
+
+interface Payment {
+  _id: string;
+  orderId: string;
+  amount: number;
+  status: string;
+  createdAt: string;
+  orderDetails?: {
+    itemCount?: number;
+    items?: Array<{ name: string; quantity: number; unitPrice: number }>;
+  };
+}
 
 export default function ProfilePage() {
   const { user, token, isLoading, updateProfile, logout } = useAuth();
@@ -13,12 +25,41 @@ export default function ProfilePage() {
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [paymentsLoading, setPaymentsLoading] = useState(false);
+  const [paymentsError, setPaymentsError] = useState('');
 
   const [formData, setFormData] = useState({
     fullName: user?.fullName || user?.name || '',
     email: user?.email || '',
     mobile: user?.mobile || user?.phone || '',
   });
+
+  // Fetch payment history
+  useEffect(() => {
+    const fetchPaymentHistory = async () => {
+      if (!token) return;
+      
+      setPaymentsLoading(true);
+      setPaymentsError('');
+      try {
+        console.log('✅ Fetching payment history...');
+        const data = await paymentApi.getPaymentHistory(token);
+        console.log('✅ Payments fetched:', data);
+        
+        // API now returns array directly
+        setPayments(Array.isArray(data) ? data : []);
+        console.log('✅ Total payments:', data?.length || 0);
+      } catch (err: any) {
+        console.error('❌ Error fetching payment history:', err.message);
+        setPaymentsError('Failed to load purchase history');
+      } finally {
+        setPaymentsLoading(false);
+      }
+    };
+
+    fetchPaymentHistory();
+  }, [token, user?.id, user?._id]);
 
   if (isLoading) {
     return (
@@ -57,6 +98,45 @@ export default function ProfilePage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'SUCCESS':
+      case 'PAID':
+        return <CheckCircle className="w-5 h-5 text-green-500" />;
+      case 'PENDING':
+        return <Clock className="w-5 h-5 text-yellow-500" />;
+      case 'FAILED':
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      default:
+        return <Clock className="w-5 h-5 text-gray-400" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'SUCCESS':
+      case 'PAID':
+        return 'bg-green-500/10 text-green-400 border-green-500/20';
+      case 'PENDING':
+        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+      case 'FAILED':
+        return 'bg-red-500/10 text-red-400 border-red-500/20';
+      default:
+        return 'bg-gray-500/10 text-gray-400 border-gray-500/20';
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   const getDisplayName = () => user?.fullName || user?.name || 'N/A';
@@ -227,15 +307,106 @@ export default function ProfilePage() {
           )}
         </motion.div>
 
-        {/* Payment History */}
+        {/* Recent Purchases */}
         <motion.div 
           className="bg-gray-900/30 border border-gray-800 rounded-lg p-8 mb-6 backdrop-blur-sm"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          <h2 className="text-xl font-bold text-white mb-4">Recent Purchases</h2>
-          <p className="text-gray-400 text-sm">Your payment history and tickets will appear here</p>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-white">Recent Purchases</h2>
+            <button
+              onClick={async () => {
+                setPaymentsLoading(true);
+                try {
+                  const data = await paymentApi.getPaymentHistory(token);
+                  const paymentsArray = Array.isArray(data) ? data : [];
+                  setPayments(paymentsArray);
+                  console.log('Refreshed payments:', paymentsArray);
+                } catch (err: any) {
+                  console.error('Failed to refresh:', err);
+                  setPaymentsError('Failed to refresh purchase history');
+                } finally {
+                  setPaymentsLoading(false);
+                }
+              }}
+              disabled={paymentsLoading}
+              className="text-sm px-3 py-1 bg-pink-600/20 hover:bg-pink-600/30 text-pink-400 border border-pink-600/30 rounded transition-colors disabled:opacity-50"
+            >
+              {paymentsLoading ? 'Refreshing...' : 'Refresh'}
+            </button>
+          </div>
+
+          {paymentsError && (
+            <motion.div 
+              className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-start gap-3 mb-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-red-400 text-sm">{paymentsError}</p>
+            </motion.div>
+          )}
+
+          {paymentsLoading ? (
+            <div className="text-center py-8">
+              <p className="text-gray-400">Loading your purchase history...</p>
+            </div>
+          ) : payments.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-400">No purchases yet. Start buying tickets to see them here!</p>
+              <p className="text-gray-500 text-sm mt-2">Purchases will appear here after successful payment.</p>
+            </div>
+          ) : (
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {payments.map((payment, index) => (
+                <motion.div
+                  key={payment._id || index}
+                  className="bg-gray-900/50 border border-gray-700 rounded-lg p-4 hover:border-pink-600/30 transition-all"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 flex items-start gap-3">
+                      {getStatusIcon(payment.status)}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="text-white font-medium">Order {payment.orderId.slice(-8)}</p>
+                          <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${getStatusColor(payment.status)}`}>
+                            {payment.status?.toUpperCase() || 'UNKNOWN'}
+                          </span>
+                        </div>
+                        <p className="text-gray-400 text-sm mb-1">
+                          {payment.orderDetails?.itemCount
+                            ? `${payment.orderDetails.itemCount} item${payment.orderDetails.itemCount > 1 ? 's' : ''}`
+                            : 'Tickets'}
+                        </p>
+                        <p className="text-gray-500 text-xs">{formatDate(payment.createdAt)}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-white font-semibold">₹{payment.amount.toFixed(2)}</p>
+                    </div>
+                  </div>
+
+                  {/* Items details */}
+                  {payment.orderDetails?.items && payment.orderDetails.items.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-700">
+                      <div className="space-y-1">
+                        {payment.orderDetails.items.map((item, itemIndex) => (
+                          <p key={itemIndex} className="text-gray-400 text-xs">
+                            • {item.name} × {item.quantity}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* Logout Button */}

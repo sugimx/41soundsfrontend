@@ -130,7 +130,17 @@ export default function TicketsPage() {
     setError('');
 
     try {
-      // Step 1: Create payment order on backend
+      // Build order details from cart
+      const orderDetails = {
+        items: cart.map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+          totalPrice: item.price * item.quantity,
+        })),
+      };
+
+      // Step 1: Create payment order on backend with order details
       const paymentResponse = await paymentApi.createOrder(
         token,
         total,
@@ -138,7 +148,8 @@ export default function TicketsPage() {
         {
           email: user.email,
           phone: user.mobile || user.phone || '9999999999',
-        }
+        },
+        orderDetails
       );
 
       // Step 2: Verify we got the payment session ID

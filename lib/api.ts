@@ -160,7 +160,15 @@ export const authApi = {
 
 // Payment API calls
 export const paymentApi = {
-  createOrder: async (token: string, amount: number, description: string, metadata: { email: string; phone: string }) => {
+  createOrder: async (
+    token: string,
+    amount: number,
+    description: string,
+    metadata: { email: string; phone: string },
+    orderDetails?: {
+      items: Array<{ name: string; quantity: number; unitPrice: number; totalPrice: number }>;
+    }
+  ) => {
     const response = await fetch(`${API_BASE_URL}/api/payments/initiate`, {
       method: 'POST',
       headers: {
@@ -171,6 +179,7 @@ export const paymentApi = {
         amount,
         description,
         metadata,
+        ...(orderDetails && { orderDetails }),
       }),
     });
 
@@ -226,7 +235,8 @@ export const paymentApi = {
     if (!response.ok) {
       throw new Error(data.message || 'Failed to fetch payment history');
     }
-    return data.data;
+    // Backend returns { total, payments } directly
+    return data.payments || [];
   },
 };
 
