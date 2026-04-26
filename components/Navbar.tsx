@@ -56,10 +56,6 @@ export default function Navbar() {
                 {/* Mobile Auth Section - Rendered by separate client component */}
                 <NavbarMobileAuthSection onClose={() => setIsOpen(false)} />
 
-                <a href="/tickets" onClick={() => setIsOpen(false)} className="px-6 py-2.5 bg-pink-600 hover:bg-pink-700 active:scale-95 transition-all rounded-full">
-                    Book Tickets
-                </a>
-
                 <button onClick={() => setIsOpen(false)} className="active:ring-3 active:ring-white aspect-square size-10 p-1 items-center justify-center bg-pink-600 hover:bg-pink-700 transition text-white rounded-md flex">
                     <XIcon />
                 </button>

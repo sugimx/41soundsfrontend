@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { AlertCircle, Eye, EyeOff, ChevronRightIcon } from 'lucide-react';
 import { motion } from 'motion/react';
+import { GoogleLoginButton } from '@/components/GoogleLoginButton';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -162,6 +163,23 @@ export default function LoginPage() {
             {isLoading ? 'Signing in...' : 'Sign In'}
           </button>
         </motion.form>
+
+        {/* Divider */}
+        <div className="my-6 flex items-center gap-3">
+          <div className="flex-1 h-px bg-gray-800"></div>
+          <p className="text-gray-300 text-sm">Or sign in with</p>
+          <div className="flex-1 h-px bg-gray-800"></div>
+        </div>
+
+        {/* Google Login */}
+        <motion.div
+          className="w-full flex justify-center mb-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35, duration: 0.5 }}
+        >
+          <GoogleLoginButton />
+        </motion.div>
 
         {/* Divider */}
         <div className="my-6 flex items-center gap-3">

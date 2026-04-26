@@ -96,8 +96,7 @@ export function NavbarMobileAuthSection({ onClose }: { onClose?: () => void }) {
 
   // Mobile view - authenticated
   if (token && user) {
-    const displayName = user.fullName || user.name || 'User';
-    
+
     const handleLogout = async () => {
       await logout();
       onClose?.();
@@ -106,9 +105,6 @@ export function NavbarMobileAuthSection({ onClose }: { onClose?: () => void }) {
 
     return (
       <>
-        <p className="text-sm text-gray-400">
-          Signed in as <span className="text-white font-medium">{displayName}</span>
-        </p>
         <Link 
           href="/profile" 
           onClick={onClose} 

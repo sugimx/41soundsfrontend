@@ -42,6 +42,9 @@ export default function RootLayout({ children, }: Readonly<{
                     }}
                 />
                 {/* End Google Analytics */}
+                {/* Google Sign-In Script */}
+                <script src="https://accounts.google.com/gsi/client" async defer></script>
+                {/* End Google Sign-In */}
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <link rel="preload" href="/assets/background-splash.svg" as="image" />
             </head>
