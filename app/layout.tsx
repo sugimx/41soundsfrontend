@@ -12,11 +12,11 @@ const poppins = Poppins({
 
 export const metadata = {
     title: "41 Sounds - Buy Live Concert Tickets Online | Chinmayi Live Music Event",
-    description: "Book tickets for Chinmayi Live Concert - 41 Sounds. Experience Muthamazhai 2.0 in Coimbatore on 16 May 2026. Secure online ticketing.",
+    description: "Book tickets for Chinmayi Live Concert - 41 Sounds. Experience Muthamazhai 2.0 in Coimbatore on 06 June 2026. Secure online ticketing.",
     keywords: "concert tickets, live music, Chinmayi concert, music event, ticket booking, live performance, Coimbatore events, music festival, concert tickets online, event booking",
     openGraph: {
         title: "41 Sounds - Live Concert Tickets | Chinmayi Music Event",
-        description: "Book your tickets for Chinmayi Live Concert - 41 Sounds. Muthamazhai 2.0 on 16 May 2026 in Coimbatore.",
+        description: "Book your tickets for Chinmayi Live Concert - 41 Sounds. Muthamazhai 2.0 on 06 June 2026 in Coimbatore.",
         type: "website",
     },
 };

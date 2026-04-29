@@ -1,6 +1,6 @@
 # 41 Sounds - Live Concert Website
 
-A modern concert event website for the singing concert happening on **16 May 2026, Saturday (6:30 PM - 10:00 PM)** in **Karthipuram, Neelambur, Coimbatore, Tamil Nadu**.
+A modern concert event website for the singing concert happening on **06 June 2026, Saturday (6:30 PM - 10:00 PM)** in **Karthipuram, Neelambur, Coimbatore, Tamil Nadu**.
 
 ## Features
 
