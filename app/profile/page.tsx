@@ -30,6 +30,7 @@ export default function ProfilePage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [paymentsLoading, setPaymentsLoading] = useState(false);
   const [paymentsError, setPaymentsError] = useState('');
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -198,6 +199,15 @@ export default function ProfilePage() {
     } catch (err) {
       console.error('Logout failed:', err);
     }
+  };
+
+  const handleLogoutClick = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    setShowLogoutConfirm(false);
+    await handleLogout();
   };
 
   return (
@@ -446,7 +456,7 @@ export default function ProfilePage() {
 
         {/* Logout Button */}
         <motion.button
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className="w-full px-4 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-lg transition-colors active:scale-95"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -454,6 +464,45 @@ export default function ProfilePage() {
         >
           Logout
         </motion.button>
+
+        {/* Logout Confirmation Popup */}
+        {showLogoutConfirm && (
+          <div 
+            className="fixed z-50 bg-black bg-opacity-50 flex items-center justify-center"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            }}
+          >
+            <div className="bg-gray-900 rounded-lg p-6 max-w-sm mx-4 border border-gray-700 shadow-2xl">
+              <h3 className="text-xl font-semibold text-white mb-4">Confirm Logout</h3>
+              <p className="text-gray-300 mb-6">Are you sure you want to log out?</p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setShowLogoutConfirm(false)}
+                  className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLogoutConfirm}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </motion.div>
     </div>
   );
