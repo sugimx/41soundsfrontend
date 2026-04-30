@@ -29,7 +29,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authApi
         .getProfile(storedToken)
         .then((user) => {
-          console.log('✅ User profile loaded:', user);
           if (user) {
             setUser(user);
           }

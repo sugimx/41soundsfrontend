@@ -43,9 +43,17 @@ export function NavbarAuthSection() {
           href="/profile" 
           className="flex items-center gap-3 hover:opacity-80 transition-opacity"
         >
-          <div className="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-semibold">
-            {userInitial}
-          </div>
+          {user.profileImage ? (
+            <img 
+              src={user.profileImage} 
+              alt={displayName || 'Profile'}
+              className="w-10 h-10 rounded-full object-cover border-2 border-pink-500"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white font-semibold">
+              {userInitial}
+            </div>
+          )}
           <span className="text-sm text-white hidden lg:block">
             {displayName || 'Profile'}
           </span>

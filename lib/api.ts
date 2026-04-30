@@ -28,6 +28,9 @@ export interface UserProfile {
   mobile?: string;
   gender?: string;
   dateOfBirth?: string;
+  profileImage?: string;
+  isActive?: boolean;
+  createdAt?: string;
 }
 
 export interface PaymentCreateResponse {
