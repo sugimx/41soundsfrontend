@@ -59,11 +59,12 @@ export function GoogleLoginButton() {
 
         console.log('✅ Google login successful');
 
-        // Store token and redirect
+        // Store token and redirect to homepage
         if (responseData?.token) {
           tokenStorage.setToken(responseData.token);
-          router.push('/');
-          window.location.reload();
+          console.log('✅ Token stored, redirecting to homepage...');
+          // Use window.location.href for full page redirect to homepage
+          window.location.href = '/';
         } else {
           setError('No token received from server');
         }
