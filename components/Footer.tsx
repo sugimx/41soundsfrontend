@@ -52,6 +52,7 @@ export default function Footer() {
                     </a>
                 </div>
                 <p className="mt-3">&copy; {new Date().getFullYear()} <a href="https://41sounds.com" target="_blank" rel="noreferrer" className="hover:text-pink-500">41 Sounds</a></p>
+                <p className="mt-1 text-xs text-gray-500">41Sounds is a product of Sugimx Private Limited.</p>
             </motion.div>
         </footer>
     );
