@@ -30,6 +30,7 @@ export interface UserProfile {
   dateOfBirth?: string;
   profileImage?: string;
   isActive?: boolean;
+  role?: 'user' | 'admin' | 'super_admin';
   createdAt?: string;
 }
 

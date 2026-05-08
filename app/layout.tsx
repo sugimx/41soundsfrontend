@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import LenisScroll from "@/components/LenisScroll";
 import { AuthProvider } from "@/lib/auth-context";
+import { AdminProvider } from "@/lib/admin-context";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -50,8 +51,10 @@ export default function RootLayout({ children, }: Readonly<{
             </head>
             <body style={{ width: '100%', minHeight: '100%' }}>
                 <AuthProvider>
-                    <LenisScroll />
-                    {children}
+                    <AdminProvider>
+                        <LenisScroll />
+                        {children}
+                    </AdminProvider>
                 </AuthProvider>
             </body>
         </html>
