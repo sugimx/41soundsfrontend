@@ -123,6 +123,7 @@ export const adminApi = {
     ticketTier: string;
     quantity: number;
   }): Promise<Ticket> => {
+    console.log("Creating ticket:", ticketData);
     const response = await fetch(`${API_BASE_URL}/api/admin/tickets`, {
       method: 'POST',
       headers: {
