@@ -7,7 +7,7 @@ interface AuthContextType {
   user: UserProfile | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<UserProfile | void>;
   register: (email: string, fullName: string, password: string, mobile: string, gender: string, dateOfBirth: string) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<void>;
@@ -52,7 +52,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         tokenStorage.setToken(response.token);
         setToken(response.token);
         if (response.user) {
-          setUser(response.user as UserProfile);
+          const usr = response.user as UserProfile;
+          setUser(usr);
+          return usr;
         }
       }
     } catch (error) {

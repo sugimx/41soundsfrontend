@@ -2,18 +2,6 @@ import { IPricing } from "@/types";
 
 export const pricingData: IPricing[] = [
     {
-        name: "Rocker",
-        price: 500,
-        period: "ticket",
-        features: [
-            "General admission entry",
-            "Standing access",
-            "Digital concert program"
-        ],
-        mostPopular: false,
-        color: "white"
-    },
-    {
         name: "Gold",
         price: 800,
         period: "ticket",
@@ -56,7 +44,7 @@ export const pricingData: IPricing[] = [
         color: "dark-pink"
     },
     {
-        name: "Special VIP",
+        name: "MVIP",
         price: 5000,
         period: "ticket",
         features: [

@@ -11,15 +11,15 @@ import { Search, Filter, Plus } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 
-const TICKET_TIERS = ['Rocker', 'Gold', 'Platinum', 'VIP'];
+const TICKET_TIERS = ['Gold', 'Platinum', 'VIP', 'MVIP'];
 const TICKET_STATUSES = ['pending', 'completed', 'refunded', 'cancelled'];
 
 // Map pricing data to tier prices
 const TIER_PRICES: Record<string, number> = {
-  Rocker: 500,
   Gold: 800,
   Platinum: 1200,
   VIP: 2000,
+  MVIP: 5000,
 };
 
 export default function TicketsPage() {
@@ -55,7 +55,7 @@ export default function TicketsPage() {
     tier: string;
     quantity: number;
   }>>([]);
-  const [currentTier, setCurrentTier] = useState('Rocker');
+  const [currentTier, setCurrentTier] = useState('Gold');
   const [currentQuantity, setCurrentQuantity] = useState(1);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -171,7 +171,7 @@ export default function TicketsPage() {
         mobileNumber: '',
       });
       setCart([]);
-      setCurrentTier('Rocker');
+      setCurrentTier('Gold');
       setCurrentQuantity(1);
     } catch (err) {
       console.error('Failed to create ticket:', err);
@@ -208,7 +208,7 @@ export default function TicketsPage() {
       }
     });
 
-    setCurrentTier('Rocker');
+    setCurrentTier('Gold');
     setCurrentQuantity(1);
     setFormError(null);
   };
@@ -499,7 +499,7 @@ export default function TicketsPage() {
             mobileNumber: '',
           });
           setCart([]);
-          setCurrentTier('Rocker');
+          setCurrentTier('Gold');
           setCurrentQuantity(1);
         }}
         size="lg"

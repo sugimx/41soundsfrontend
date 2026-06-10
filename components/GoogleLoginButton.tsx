@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { tokenStorage } from '@/lib/api';
 
@@ -11,7 +10,6 @@ declare global {
 }
 
 export function GoogleLoginButton() {
-  const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string>('');
 
@@ -59,12 +57,18 @@ export function GoogleLoginButton() {
 
         console.log('✅ Google login successful');
 
-        // Store token and redirect to homepage
+        // Store token and redirect based on user role
         if (responseData?.token) {
           tokenStorage.setToken(responseData.token);
-          console.log('✅ Token stored, redirecting to homepage...');
-          // Use window.location.href for full page redirect to homepage
-          window.location.href = '/';
+          console.log('✅ Token stored');
+          const role = responseData?.user?.role;
+          if (role === 'admin' || role === 'super_admin') {
+            console.log('➡️ Redirecting admin to /admin');
+            window.location.href = '/admin';
+          } else {
+            console.log('➡️ Redirecting to homepage');
+            window.location.href = '/';
+          }
         } else {
           setError('No token received from server');
         }
@@ -74,7 +78,7 @@ export function GoogleLoginButton() {
         setError(`Google login failed: ${msg}`);
       }
     },
-    [router]
+    []
   );
 
   useEffect(() => {

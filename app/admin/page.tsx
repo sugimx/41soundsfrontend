@@ -161,10 +161,10 @@ export default function AdminDashboard() {
       >
         <Chart
           data={[
-            { name: 'Rocker', value: stats?.ticketsByTier?.Rocker || 0 },
             { name: 'Gold', value: stats?.ticketsByTier?.Gold || 0 },
             { name: 'Platinum', value: stats?.ticketsByTier?.Platinum || 0 },
             { name: 'VIP', value: stats?.ticketsByTier?.VIP || 0 },
+            { name: 'MVIP', value: stats?.ticketsByTier?.MVIP || 0 },
           ]}
           title="Tickets by Tier"
           type="pie"

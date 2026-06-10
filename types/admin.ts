@@ -17,7 +17,7 @@ export interface Ticket {
   userEmail: string;
   userName: string;
   mobileNumber?: string;
-  ticketTier: 'Rocker' | 'Gold' | 'Platinum' | 'VIP';
+  ticketTier: 'Gold' | 'Platinum' | 'VIP' | 'MVIP';
   quantity: number;
   unitPrice: number;
   totalPrice: number;
@@ -92,16 +92,16 @@ export interface DashboardStats {
   totalRefunds: number;
   openSupportTickets: number;
   ticketsByTier: {
-    Rocker: number;
     Gold: number;
     Platinum: number;
     VIP: number;
+    MVIP: number;
   };
   revenueByTier: {
-    Rocker: number;
     Gold: number;
     Platinum: number;
     VIP: number;
+    MVIP: number;
   };
   paymentStats: {
     completed: number;

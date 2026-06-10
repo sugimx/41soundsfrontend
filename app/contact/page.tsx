@@ -73,7 +73,7 @@ const ContactPage = () => (
         <div className="space-y-6">
           <div>
             <h3 className="text-lg font-semibold text-white mb-2">What are your ticket prices?</h3>
-            <p className="text-gray-400">We offer various ticket tiers ranging from ₹500 to ₹2000 (Rocker, Gold, Platinum, and VIP). Each tier includes different benefits and access levels. Visit our Pricing section for detailed information.</p>
+            <p className="text-gray-400">We offer various ticket tiers ranging from ₹800 to ₹5000 (Gold, Platinum, VIP, and MVIP). Each tier includes different benefits and access levels. Visit our Pricing section for detailed information.</p>
           </div>
 
           <div>

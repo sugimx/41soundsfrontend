@@ -60,10 +60,10 @@ export default function AnalyticsPage() {
           retentionRate: stats?.totalUsers ? `${Math.min(95, Math.round((stats.totalUsers / (stats.totalUsers + 5)) * 100))}%` : "0%",
         },
         ticketDistribution: {
-          Rocker: analytics?.ticketsByTier?.Rocker || 0,
           Gold: analytics?.ticketsByTier?.Gold || 0,
           Platinum: analytics?.ticketsByTier?.Platinum || 0,
           VIP: analytics?.ticketsByTier?.VIP || 0,
+          MVIP: analytics?.ticketsByTier?.MVIP || 0,
         },
         paymentStatus: {
           Completed: analytics?.paymentStats?.completed || 0,
@@ -72,10 +72,10 @@ export default function AnalyticsPage() {
           Refunded: analytics?.paymentStats?.refunded || 0,
         },
         revenueByTier: {
-          Rocker: analytics?.revenueByTier?.Rocker || 0,
           Gold: analytics?.revenueByTier?.Gold || 0,
           Platinum: analytics?.revenueByTier?.Platinum || 0,
           VIP: analytics?.revenueByTier?.VIP || 0,
+          MVIP: analytics?.revenueByTier?.MVIP || 0,
         },
       };
 
@@ -91,10 +91,10 @@ Average Ticket Value,₹${reportData.metrics.avgTicketValue.toLocaleString('en-I
 Retention Rate,${reportData.metrics.retentionRate}
 
 TICKET DISTRIBUTION
-Rocker,${reportData.ticketDistribution.Rocker}
 Gold,${reportData.ticketDistribution.Gold}
 Platinum,${reportData.ticketDistribution.Platinum}
 VIP,${reportData.ticketDistribution.VIP}
+MVIP,${reportData.ticketDistribution.MVIP}
 
 PAYMENT STATUS
 Completed,${reportData.paymentStatus.Completed}
@@ -103,10 +103,10 @@ Failed,${reportData.paymentStatus.Failed}
 Refunded,${reportData.paymentStatus.Refunded}
 
 REVENUE BY TIER
-Rocker,₹${reportData.revenueByTier.Rocker.toLocaleString('en-IN')}
 Gold,₹${reportData.revenueByTier.Gold.toLocaleString('en-IN')}
 Platinum,₹${reportData.revenueByTier.Platinum.toLocaleString('en-IN')}
-VIP,₹${reportData.revenueByTier.VIP.toLocaleString('en-IN')}`;
+VIP,₹${reportData.revenueByTier.VIP.toLocaleString('en-IN')}
+MVIP,₹${reportData.revenueByTier.MVIP.toLocaleString('en-IN')}`;
 
       // Create blob and download
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -230,10 +230,10 @@ VIP,₹${reportData.revenueByTier.VIP.toLocaleString('en-IN')}`;
       >
         <Chart
           data={[
-            { name: 'Rocker', value: analytics?.ticketsByTier?.Rocker || 0 },
             { name: 'Gold', value: analytics?.ticketsByTier?.Gold || 0 },
             { name: 'Platinum', value: analytics?.ticketsByTier?.Platinum || 0 },
             { name: 'VIP', value: analytics?.ticketsByTier?.VIP || 0 },
+            { name: 'MVIP', value: analytics?.ticketsByTier?.MVIP || 0 },
           ]}
           title="Ticket Distribution"
           type="pie"
@@ -262,10 +262,10 @@ VIP,₹${reportData.revenueByTier.VIP.toLocaleString('en-IN')}`;
       >
         <Chart
           data={[
-            { name: 'Rocker', value: analytics?.revenueByTier?.Rocker || 0 },
             { name: 'Gold', value: analytics?.revenueByTier?.Gold || 0 },
             { name: 'Platinum', value: analytics?.revenueByTier?.Platinum || 0 },
             { name: 'VIP', value: analytics?.revenueByTier?.VIP || 0 },
+            { name: 'MVIP', value: analytics?.revenueByTier?.MVIP || 0 },
           ]}
           title="Revenue by Tier"
           type="bar"
@@ -279,10 +279,10 @@ VIP,₹${reportData.revenueByTier.VIP.toLocaleString('en-IN')}`;
           <h3 className="text-lg font-bold text-white mb-6">Revenue Summary</h3>
           <div className="space-y-4">
             {[
-              { tier: 'Rocker', revenue: analytics?.revenueByTier?.Rocker || 0, tickets: analytics?.ticketsByTier?.Rocker || 0 },
               { tier: 'Gold', revenue: analytics?.revenueByTier?.Gold || 0, tickets: analytics?.ticketsByTier?.Gold || 0 },
               { tier: 'Platinum', revenue: analytics?.revenueByTier?.Platinum || 0, tickets: analytics?.ticketsByTier?.Platinum || 0 },
               { tier: 'VIP', revenue: analytics?.revenueByTier?.VIP || 0, tickets: analytics?.ticketsByTier?.VIP || 0 },
+              { tier: 'MVIP', revenue: analytics?.revenueByTier?.MVIP || 0, tickets: analytics?.ticketsByTier?.MVIP || 0 },
             ].map((item) => (
               <div key={item.tier} className="flex items-center justify-between pb-3 border-b border-gray-700 last:border-0">
                 <span className="text-white font-medium">{item.tier}</span>

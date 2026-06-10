@@ -51,8 +51,12 @@ export default function LoginPage() {
 
     setIsLoading(true);
     try {
-      await login(formData.email, formData.password);
-      router.push('/');
+      const loggedUser = await login(formData.email, formData.password);
+      if (loggedUser && (loggedUser.role === 'admin' || loggedUser.role === 'super_admin')) {
+        router.push('/admin');
+      } else {
+        router.push('/');
+      }
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
