@@ -59,7 +59,7 @@ export default function UsersPage() {
     };
 
     fetchUsers();
-  }, [token, page, limit]);
+  }, [token, page, limit, searchTerm]);
 
   const handleToggleActive = async (user: User) => {
     if (!token) return;

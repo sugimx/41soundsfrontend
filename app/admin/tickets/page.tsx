@@ -146,15 +146,21 @@ export default function TicketsPage() {
       setIsCreating(true);
       setFormError(null);
       
-      // Create tickets for each item in cart
+      // Create tickets for each item in cart. Continue on error and collect failures.
+      const failedItems: Array<{ item: typeof cart[number]; error: string }> = [];
       for (const item of cart) {
-        await adminApi.createTicket(token, {
-          userEmail: formData.userEmail,
-          userName: formData.userName,
-          mobileNumber: formData.mobileNumber,
-          ticketTier: item.tier,
-          quantity: item.quantity,
-        });
+        try {
+          await adminApi.createTicket(token, {
+            userEmail: formData.userEmail,
+            userName: formData.userName,
+            mobileNumber: formData.mobileNumber,
+            ticketTier: item.tier,
+            quantity: item.quantity,
+          });
+        } catch (err) {
+          console.error('Failed to create ticket for item', item, err);
+          failedItems.push({ item, error: err instanceof Error ? err.message : String(err) });
+        }
       }
       
       // Refresh tickets list
@@ -163,16 +169,20 @@ export default function TicketsPage() {
       setTotal(data.total);
       setPage(1);
       
-      // Reset form and close modal
-      setIsAddModalOpen(false);
-      setFormData({
-        userEmail: '',
-        userName: '',
-        mobileNumber: '',
-      });
-      setCart([]);
-      setCurrentTier('Gold');
-      setCurrentQuantity(1);
+      // Reset form and close modal (but keep failed items visible via formError)
+      if (failedItems.length === 0) {
+        setIsAddModalOpen(false);
+        setFormData({
+          userEmail: '',
+          userName: '',
+          mobileNumber: '',
+        });
+        setCart([]);
+        setCurrentTier('Gold');
+        setCurrentQuantity(1);
+      } else {
+        setFormError(`Failed to create ${failedItems.length} item(s). Check console for details.`);
+      }
     } catch (err) {
       console.error('Failed to create ticket:', err);
       setFormError(err instanceof Error ? err.message : 'Failed to create ticket');
@@ -342,7 +352,11 @@ export default function TicketsPage() {
             { key: 'userEmail', label: 'Email' },
             { key: 'userName', label: 'Customer Name' },
             { key: 'ticketTier', label: 'Tier' },
-            { key: 'quantity', label: 'Qty' },
+            {
+              key: 'quantity',
+              label: 'Qty',
+              render: (value) => value ?? '-',
+            },
             {
               key: 'totalPrice',
               label: 'Price',
