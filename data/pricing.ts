@@ -22,7 +22,6 @@ export const pricingData: IPricing[] = [
             "Premium seating",
             "Priority entry",
             "Food court access",
-            "Vicky performance access",
             "Digital concert program"
         ],
         mostPopular: false,

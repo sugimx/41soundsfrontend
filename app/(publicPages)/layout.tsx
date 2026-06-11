@@ -3,8 +3,8 @@ import Navbar from "@/components/Navbar";
 import React from "react";
 
 export const metadata = {
-    title: "41 Sounds - Live Concert",
-    description: "Chinmayi Live Concert – Muthamazhai 2.0 | Coimbatore | 06 June 2026, 6:30 PM",
+    title: "41 Sounds",
+    description: "Chinmayi Live Concert – Muthamazhai 2.0 | Coimbatore | 18 July 2026, 6:30 PM",
     keywords: "concert tickets, live music tickets, Chinmayi concert, music events, ticket booking online, live performance, Coimbatore concert, music show, event ticketing, concert experience",
 };
 

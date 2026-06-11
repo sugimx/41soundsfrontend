@@ -67,7 +67,7 @@ export default function FeaturesSection() {
                 </div>
 
                 {/* Inserted image between features and 3D banner */}
-                <div className="flex justify-center mt-16">
+                {/* <div className="flex justify-center mt-16">
                     <Image
                         src="/assets/Banner3.jpeg"
                         alt="Event highlight"
@@ -75,7 +75,7 @@ export default function FeaturesSection() {
                         height={400}
                         className="rounded-xl shadow-lg border border-slate-800"
                     />
-                </div>
+                </div> */}
 
                 <motion.div
                     className="mt-16 p-8 rounded-2xl border border-pink-800/50 bg-linear-to-br from-pink-950/50 to-slate-950"
@@ -115,7 +115,7 @@ export default function FeaturesSection() {
                         viewport={{ once: true }}
                         transition={{ type: "spring", stiffness: 320, damping: 70, mass: 1 }}
                     >
-                        <Image src="/assets/vicky-pic.jpg" alt="41Sounds event" width={1000} height={500} className="rounded-2xl hover:-translate-y-0.5 transition duration-300" />
+                        <Image src="/assets/chinmayi_bw.jpg" alt="41Sounds event" width={1000} height={500} className="rounded-2xl hover:-translate-y-0.5 transition duration-300" />
                     </motion.div>
                     
                     <motion.div
