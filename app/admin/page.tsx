@@ -44,15 +44,27 @@ export default function AdminDashboard() {
           startDate: startDate.toISOString().split('T')[0],
           endDate: endDate.toISOString().split('T')[0],
         });
-        if (analyticsData?.userGrowth) {
-          // Transform user growth data into revenue chart format
+        console.log('Analytics Data:', analyticsData);
+        // Prefer explicit revenueTrend data for charts. Fall back to userGrowth only for users (not tickets).
+        if (analyticsData?.revenueTrend && analyticsData.revenueTrend.length) {
+          setChartData(
+            analyticsData.revenueTrend.map((item: any, idx: number) => ({
+              name: item._id || `Day ${idx + 1}`,
+              revenue: item.revenue ?? item.totalRevenue ?? item.amount ?? 0,
+              tickets: item.ticketsSold ?? item.tickets ?? 0,
+            }))
+          );
+        } else if (analyticsData?.userGrowth) {
+          // userGrowth contains counts of users — don't treat those as ticket sales.
           setChartData(
             analyticsData.userGrowth.map((item: any, idx: number) => ({
               name: item._id || `Day ${idx + 1}`,
-              revenue: Math.random() * 5000 + 1000, // Real revenue would need separate tracking
-              tickets: Math.floor(Math.random() * 100) + 50,
+              revenue: item.revenue ?? 0,
+              tickets: 0,
             }))
           );
+        } else {
+          setChartData([]);
         }
       } catch (err) {
         console.error('Failed to fetch dashboard stats:', err);

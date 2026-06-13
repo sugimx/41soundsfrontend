@@ -190,18 +190,22 @@ MVIP,₹${reportData.revenueByTier.MVIP.toLocaleString('en-IN')}`;
       </motion.div>
 
       {/* Charts */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
         className="grid grid-cols-1 lg:grid-cols-2 gap-6"
       >
         <Chart
-          data={analytics?.userGrowth?.map((item: any, idx: number) => ({
-            date: item._id || `Day ${idx + 1}`,
-            revenue: Math.random() * 5000 + 1000,
-            ticketsSold: Math.floor(Math.random() * 100) + 50,
-          })) || []}
+          data={
+            (analytics?.revenueTrend && analytics.revenueTrend.length
+              ? analytics.revenueTrend.map((item: any, idx: number) => ({
+                  date: item._id || `Day ${idx + 1}`,
+                  revenue: item.revenue ?? item.totalRevenue ?? item.amount ?? 0,
+                  ticketsSold: item.ticketsSold ?? item.tickets ?? 0,
+                }))
+              : [])
+          }
           title="Revenue Trend"
           type="line"
           dataKey="revenue"
@@ -211,7 +215,7 @@ MVIP,₹${reportData.revenueByTier.MVIP.toLocaleString('en-IN')}`;
         <Chart
           data={analytics?.userGrowth?.map((item: any, idx: number) => ({
             date: item._id || `Day ${idx + 1}`,
-            users: item.count || 0,
+            users: item.count ?? item.users ?? 0,
           })) || []}
           title="User Growth"
           type="line"
@@ -219,39 +223,7 @@ MVIP,₹${reportData.revenueByTier.MVIP.toLocaleString('en-IN')}`;
           color="#3b82f6"
           height={350}
         />
-      </motion.div>
-
-      {/* Distribution Charts */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-      >
-        <Chart
-          data={[
-            { name: 'Gold', value: analytics?.ticketsByTier?.Gold || 0 },
-            { name: 'Platinum', value: analytics?.ticketsByTier?.Platinum || 0 },
-            { name: 'VIP', value: analytics?.ticketsByTier?.VIP || 0 },
-            { name: 'MVIP', value: analytics?.ticketsByTier?.MVIP || 0 },
-          ]}
-          title="Ticket Distribution"
-          type="pie"
-          dataKey="value"
-        />
-
-        <Chart
-          data={[
-            { name: 'Completed', value: analytics?.paymentStats?.completed || 0 },
-            { name: 'Pending', value: analytics?.paymentStats?.pending || 0 },
-            { name: 'Failed', value: analytics?.paymentStats?.failed || 0 },
-            { name: 'Refunded', value: analytics?.paymentStats?.refunded || 0 },
-          ]}
-          title="Payment Status"
-          type="pie"
-          dataKey="value"
-        />
-      </motion.div>
+      </motion.div> */}
 
       {/* Revenue by Tier */}
       <motion.div
@@ -295,6 +267,39 @@ MVIP,₹${reportData.revenueByTier.MVIP.toLocaleString('en-IN')}`;
           </div>
         </div>
       </motion.div>
+
+      {/* Distribution Charts */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+      >
+        <Chart
+          data={[
+            { name: 'Gold', value: analytics?.ticketsByTier?.Gold || 0 },
+            { name: 'Platinum', value: analytics?.ticketsByTier?.Platinum || 0 },
+            { name: 'VIP', value: analytics?.ticketsByTier?.VIP || 0 },
+            { name: 'MVIP', value: analytics?.ticketsByTier?.MVIP || 0 },
+          ]}
+          title="Ticket Distribution"
+          type="pie"
+          dataKey="value"
+        />
+
+        <Chart
+          data={[
+            { name: 'Completed', value: analytics?.paymentStats?.completed || 0 },
+            { name: 'Pending', value: analytics?.paymentStats?.pending || 0 },
+            { name: 'Failed', value: analytics?.paymentStats?.failed || 0 },
+            { name: 'Refunded', value: analytics?.paymentStats?.refunded || 0 },
+          ]}
+          title="Payment Status"
+          type="pie"
+          dataKey="value"
+        />
+      </motion.div>
+      
     </div>
   );
 }

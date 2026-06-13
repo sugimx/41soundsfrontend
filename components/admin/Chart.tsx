@@ -45,7 +45,7 @@ export function Chart({
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis stroke="#9ca3af" />
-            <YAxis stroke="#9ca3af" />
+            <YAxis stroke="#9ca3af" domain={[0, 'auto']} />
             <Tooltip
               contentStyle={{
                 backgroundColor: '#1f2937',
@@ -61,7 +61,7 @@ export function Chart({
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
             <XAxis stroke="#9ca3af" />
-            <YAxis stroke="#9ca3af" />
+            <YAxis stroke="#9ca3af" domain={[0, 'auto']} />
             <Tooltip
               contentStyle={{
                 backgroundColor: '#1f2937',
