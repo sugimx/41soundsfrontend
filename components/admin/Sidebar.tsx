@@ -9,6 +9,7 @@ import {
   CreditCard,
   MessageSquare,
   Settings,
+  ScanLine,
   LogOut,
   Menu,
   X,
@@ -47,6 +48,11 @@ const menuItems = [
     label: 'Analytics',
     href: '/admin/analytics',
     icon: BarChart3,
+  },
+  {
+    label: 'Scan QR',
+    href: '/admin/qrs',
+    icon: ScanLine,
   },
 ];
 
