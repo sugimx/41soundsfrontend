@@ -8,6 +8,7 @@ import { DataTable } from '@/components/admin/DataTable';
 import { Modal } from '@/components/admin/Modal';
 import { Search, Send } from 'lucide-react';
 import { motion } from 'motion/react';
+import toast from "react-hot-toast";
 
 
 export default function TicketsPage() {
@@ -18,6 +19,12 @@ export default function TicketsPage() {
     const [page, setPage] = useState(1);
     const [limit] = useState(10);
     const [total, setTotal] = useState(0);
+
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [actionMessage, setActionMessage] = useState<{
+        type: 'success' | 'error';
+        text: string;
+    } | null>(null);
 
     // Filters
     const [searchTerm, setSearchTerm] = useState('');
@@ -63,20 +70,72 @@ export default function TicketsPage() {
         setIsModalOpen(true);
     };
 
-   const sendEmail = async (ticket: Ticket) => {
-  await adminApi.sendEmail(token!, ticket._id);
-};
+    const sendEmail = async (ticket: Ticket) => {
+        try {
+            toast.loading("Sending email...", { id: ticket._id });
 
-const sendWhatsApp = async (ticket: Ticket) => {
-  await adminApi.sendWhatsApp(token!, ticket._id);
-};
+            await adminApi.sendEmail(token!, ticket._id);
 
-const sendBoth = async (ticket: Ticket) => {
-  await adminApi.sendBoth(token!, ticket._id);
-};
+            toast.success("Email sent successfully!", {
+                id: ticket._id,
+            });
+        } catch {
+            toast.error("Failed to send email", {
+                id: ticket._id,
+            });
+        }
+    };
 
-const sendBulkTickets = async () => {
-  await adminApi.sendBulk(token!);
+    const sendWhatsApp = async (ticket: Ticket) => {
+        try {
+            toast.loading("Sending WhatsApp...", { id: ticket._id });
+
+            await adminApi.sendWhatsApp(token!, ticket._id);
+
+            toast.success("WhatsApp sent successfully!", {
+                id: ticket._id,
+            });
+        } catch {
+            toast.error("Failed to send WhatsApp", {
+                id: ticket._id,
+            });
+        }
+    };
+
+    const sendBoth = async (ticket: Ticket) => {
+        try {
+            toast.loading("Sending email & WhatsApp...", { id: ticket._id });
+
+            await adminApi.sendBoth(token!, ticket._id);
+
+            toast.success("Email & WhatsApp sent successfully!", {
+                id: ticket._id,
+            });
+        } catch {
+            toast.error("Failed to send messages", {
+                id: ticket._id,
+            });
+        }
+    };
+
+    const sendBulkTickets = async () => {
+    const toastId = toast.loading("Delivering all tickets...");
+
+    try {
+        await adminApi.sendBulk(token!);
+
+        toast.success("All tickets delivered successfully!", {
+            id: toastId,
+        });
+        
+    } catch (err: any) {
+        toast.error(
+            err?.response?.data?.message || "Failed to deliver tickets",
+            {
+                id: toastId,
+            }
+        );
+    }
 };
 
     return (
@@ -89,7 +148,15 @@ const sendBulkTickets = async () => {
                         <p className="text-gray-400">Manage your ticket deliveries</p>
                     </div>
                     <button
-                        onClick={() => sendBulkTickets()}
+                        onClick={() => {
+                            const confirmed = window.confirm(
+                                "Are you sure you want to send tickets to all users?"
+                            );
+
+                            if (confirmed) {
+                                sendBulkTickets();
+                            }
+                        }}
                         className="flex items-center gap-2 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors font-medium"
                     >
                         <Send size={20} />

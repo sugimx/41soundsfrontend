@@ -4,6 +4,7 @@ import "./globals.css";
 import LenisScroll from "@/components/LenisScroll";
 import { AuthProvider } from "@/lib/auth-context";
 import { AdminProvider } from "@/lib/admin-context";
+import { Toaster } from "react-hot-toast";
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -54,6 +55,29 @@ export default function RootLayout({ children, }: Readonly<{
                     <AdminProvider>
                         <LenisScroll />
                         {children}
+                        <Toaster
+                            position="top-right"
+                            toastOptions={{
+                                duration: 3000,
+                                style: {
+                                    background: "#1f2937",
+                                    color: "#fff",
+                                    border: "1px solid #374151",
+                                },
+                                success: {
+                                    iconTheme: {
+                                        primary: "#22c55e",
+                                        secondary: "#fff",
+                                    },
+                                },
+                                error: {
+                                    iconTheme: {
+                                        primary: "#ef4444",
+                                        secondary: "#fff",
+                                    },
+                                },
+                            }}
+                        />
                     </AdminProvider>
                 </AuthProvider>
             </body>
