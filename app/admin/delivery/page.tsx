@@ -20,12 +20,6 @@ export default function TicketsPage() {
     const [limit] = useState(10);
     const [total, setTotal] = useState(0);
 
-    const [actionLoading, setActionLoading] = useState<string | null>(null);
-    const [actionMessage, setActionMessage] = useState<{
-        type: 'success' | 'error';
-        text: string;
-    } | null>(null);
-
     // Filters
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -127,7 +121,7 @@ export default function TicketsPage() {
         toast.success("All tickets delivered successfully!", {
             id: toastId,
         });
-        
+
     } catch (err: any) {
         toast.error(
             err?.response?.data?.message || "Failed to deliver tickets",
@@ -198,28 +192,6 @@ export default function TicketsPage() {
                     columns={[
                         { key: 'userEmail', label: 'Email' },
                         { key: 'userMobile', label: 'Mobile' },
-                        // { key: 'userName', label: 'Customer Name' },
-                        // { key: 'ticketTier', label: 'Tier' },
-                        // {
-                        //     key: 'quantity',
-                        //     label: 'Qty',
-                        //     render: (value) => value ?? '-',
-                        // },
-                        // {
-                        //     key: 'totalPrice',
-                        //     label: 'Price',
-                        //     render: (value) => `₹${value?.toLocaleString() || 0}`,
-                        // },
-                        // {
-                        //     key: 'createdAt',
-                        //     label: 'Date',
-                        //     render: (value) => new Date(value).toLocaleDateString(),
-                        // },
-                        {
-                            key: 'qrGenerated',
-                            label: 'QR',
-                            render: value => value ? '✅' : '❌'
-                        },
                         {
                             key: 'emailSent',
                             label: 'Email',
@@ -230,10 +202,6 @@ export default function TicketsPage() {
                             label: 'WhatsApp',
                             render: value => value ? 'Sent' : 'Pending'
                         },
-                        // {
-                        //     key: 'deliveryStatus',
-                        //     label: 'Delivery'
-                        // }
                     ]}
                     data={filteredTickets}
                     isLoading={isLoading}

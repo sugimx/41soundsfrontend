@@ -49,7 +49,7 @@ export const adminApi = {
       });
 
       const data = (await response.json()) as any;
-      console.log('Tickets API Response:', { status: response.status, data });
+      //console.log('Tickets API Response:', { status: response.status, data });
 
       if (!response.ok) {
         throw new Error(data.message || `Failed to fetch tickets (Status: ${response.status})`);
