@@ -156,35 +156,35 @@ export default function UsersPage() {
               label: 'Total Spent',
               render: (value) => `₹${value?.toLocaleString() || 0}`,
             },
-            {
-              key: 'role',
-              label: 'Role',
-              render: (value) => (
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  value && (value === 'admin' || value === 'super_admin')
-                    ? 'bg-amber-600/20 text-amber-400'
-                    : 'bg-gray-600/20 text-gray-400'
-                }`}>
-                  {value === 'super_admin' ? 'Super Admin' : value === 'admin' ? 'Admin' : 'User'}
-                </span>
-              ),
-            },
-            {
-              key: 'isActive',
-              label: 'Status',
-              render: (value) => (
-                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                  value ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
-                }`}>
-                  {value ? 'Active' : 'Inactive'}
-                </span>
-              ),
-            },
-            {
-              key: 'createdAt',
-              label: 'Joined',
-              render: (value) => new Date(value).toLocaleDateString(),
-            },
+            // {
+            //   key: 'role',
+            //   label: 'Role',
+            //   render: (value) => (
+            //     <span className={`px-2 py-1 rounded text-xs font-medium ${
+            //       value && (value === 'admin' || value === 'super_admin')
+            //         ? 'bg-amber-600/20 text-amber-400'
+            //         : 'bg-gray-600/20 text-gray-400'
+            //     }`}>
+            //       {value === 'super_admin' ? 'Super Admin' : value === 'admin' ? 'Admin' : 'User'}
+            //     </span>
+            //   ),
+            // },
+            // {
+            //   key: 'isActive',
+            //   label: 'Status',
+            //   render: (value) => (
+            //     <span className={`px-2 py-1 rounded text-xs font-medium ${
+            //       value ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'
+            //     }`}>
+            //       {value ? 'Active' : 'Inactive'}
+            //     </span>
+            //   ),
+            // },
+            // {
+            //   key: 'createdAt',
+            //   label: 'Joined',
+            //   render: (value) => new Date(value).toLocaleDateString(),
+            // },
           ]}
           data={filteredUsers}
           isLoading={isLoading}

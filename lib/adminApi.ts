@@ -50,15 +50,15 @@ export const adminApi = {
 
       const data = (await response.json()) as any;
       console.log('Tickets API Response:', { status: response.status, data });
-      
+
       if (!response.ok) {
         throw new Error(data.message || `Failed to fetch tickets (Status: ${response.status})`);
       }
-      
+
       // Handle response: { success, data: [...], pagination: {...} }
       const tickets = Array.isArray(data.data) ? data.data : [];
       const total = data.pagination?.total || 0;
-      
+
       return { tickets, total };
     } catch (err) {
       console.error('Error fetching tickets:', err);
@@ -159,15 +159,15 @@ export const adminApi = {
 
       const data = (await response.json()) as any;
       console.log('Users API Response:', { status: response.status, data });
-      
+
       if (!response.ok) {
         throw new Error(data.message || `Failed to fetch users (Status: ${response.status})`);
       }
-      
+
       // Handle response: { success, data: [...], pagination: {...} }
       const users = Array.isArray(data.data) ? data.data : [];
       const total = data.pagination?.total || 0;
-      
+
       return { users, total };
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -243,15 +243,15 @@ export const adminApi = {
 
       const data = (await response.json()) as any;
       console.log('Payments API Response:', { status: response.status, data });
-      
+
       if (!response.ok) {
         throw new Error(data.message || `Failed to fetch payments (Status: ${response.status})`);
       }
-      
+
       // Handle response: { success, data: [...], pagination: {...} }
       const payments = Array.isArray(data.data) ? data.data : [];
       const total = data.pagination?.total || 0;
-      
+
       return { payments, total };
     } catch (err) {
       console.error('Error fetching payments:', err);
@@ -392,6 +392,77 @@ export const adminApi = {
     }
     return data.data || {};
   },
+
+  importExcel: async (token: string, file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch(`${API_BASE_URL}/api/admin/importExcel`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Failed to import Excel');
+    }
+    return data.data || {};
+  },
+
+
+  sendEmail: (token: string, ticketId: string) =>
+    fetch(`${API_BASE_URL}/api/admin/tickets/send-email`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ticketId }),
+    }),
+
+  sendWhatsApp: (token: string, ticketId: string) =>
+    fetch(`${API_BASE_URL}/api/admin/tickets/send-whatsapp`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ticketId }),
+    }),
+
+  sendBoth: (token: string, ticketId: string) =>
+    fetch(`${API_BASE_URL}/api/admin/tickets/send-both`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ticketId }),
+    }),
+
+  sendBulk: (token: string) =>
+    fetch(`${API_BASE_URL}/api/admin/tickets/send-bulk`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }),
+
+  qrScanner: async (token: string, ticketId: string) => {
+    const response = await fetch(`${API_BASE_URL}/api/admin/tickets/scan`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ticketId }),
+    });
+    return response.json();
+  }
 };
 
 // Admin verification utility

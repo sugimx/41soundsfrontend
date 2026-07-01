@@ -50,6 +50,11 @@ const menuItems = [
     icon: BarChart3,
   },
   {
+    label: 'Delivery',
+    href: '/admin/delivery',
+    icon: MessageSquare,
+  },
+  {
     label: 'Scan QR',
     href: '/admin/qrs',
     icon: ScanLine,

@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { adminApi } from '@/lib/adminApi';
+import { useAuth } from '@/lib/auth-context';
 
 interface ScanResult {
   valid: boolean;
@@ -14,12 +16,15 @@ interface ScanResult {
 }
 
 export default function QRPage() {
+  const { token } = useAuth();
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState('');
   const [isScanning, setIsScanning] = useState(true);
   const [scanner, setScanner] = useState<Html5QrcodeScanner | null>(null);
 
   useEffect(() => {
+    if (!token) return;
+
     const qrScanner = new Html5QrcodeScanner(
       'reader',
       {
@@ -34,18 +39,12 @@ export default function QRPage() {
     qrScanner.render(
       async (decodedText) => {
         try {
+          setError('');
           setIsScanning(false);
-          const response = await fetch('/api/tickets/scan', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              ticketId: decodedText,
-            }),
-          });
+          const data = await adminApi.qrScanner(token, decodedText);
 
-          const data = (await response.json()) as ScanResult;
+          console.log("API Response:", data);
+
           setResult(data);
 
           if (data.valid) {
@@ -55,8 +54,13 @@ export default function QRPage() {
           }
         } catch (err) {
           console.error('Scan error:', err);
-          setError('Failed to validate ticket');
-          setIsScanning(true);
+          setResult({
+        valid: false,
+        message: 'Unable to validate ticket',
+      });
+
+      setError('Failed to validate ticket');
+      setIsScanning(true);
         }
       },
       () => {}
@@ -65,7 +69,7 @@ export default function QRPage() {
     return () => {
       qrScanner.clear().catch(() => {});
     };
-  }, []);
+  }, [token]);
 
   const handleRescan = () => {
     setResult(null);

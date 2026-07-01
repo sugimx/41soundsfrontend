@@ -6,7 +6,7 @@ import { Payment } from '@/types/admin';
 import { useState, useEffect, useMemo } from 'react';
 import { DataTable } from '@/components/admin/DataTable';
 import { Modal } from '@/components/admin/Modal';
-import { Search, DollarSign } from 'lucide-react';
+import { Search, DollarSign, Import, ImportIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const PAYMENT_STATUSES = ['completed', 'pending', 'failed', 'refunded'];
@@ -29,6 +29,10 @@ export default function PaymentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refundReason, setRefundReason] = useState('');
   const [isRefunding, setIsRefunding] = useState(false);
+
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+const [file, setFile] = useState<File | null>(null);
+const [importing, setImporting] = useState(false);
 
   const filteredPayments = useMemo(() => {
     if (!payments || !Array.isArray(payments)) {
@@ -110,12 +114,44 @@ export default function PaymentsPage() {
     }
   };
 
+const handleImport = async () => {
+  if (!file || !token) return;
+
+  setImporting(true);
+
+  try {
+
+    const data = await adminApi.importExcel(token, file);
+
+    alert(`Imported ${data?.inserted ?? 0} tickets`);
+
+    setIsImportModalOpen(false);
+    setFile(null);
+  } catch (err) {
+    console.error(err);
+    alert("Import failed");
+  } finally {
+    setImporting(false);
+  }
+};
+
   return (
     <div className="space-y-6">
       {/* Page Title */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="flex justify-between items-center">
+        <div>
         <h1 className="text-3xl font-bold text-white mb-2">Payments Management</h1>
         <p className="text-gray-400">View and manage payment transactions</p>
+      </div>
+      <button
+                              onClick={() => setIsImportModalOpen(true)}
+                              className="flex items-center gap-2 px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors font-medium"
+                          >
+                              <Import size={20} />
+                              Import Tickets
+                          </button>
+                          </div>
       </motion.div>
 
       {error && (
@@ -180,7 +216,7 @@ export default function PaymentsPage() {
         <DataTable
           columns={[
             { key: 'orderId', label: 'Order ID' },
-            { key: 'userEmail', label: 'Customer Email' },
+            // { key: 'userEmail', label: 'Customer Email' },
             {
               key: 'amount',
               label: 'Amount',
@@ -284,6 +320,49 @@ export default function PaymentsPage() {
           </div>
         )}
       </Modal>
+
+      <Modal
+  isOpen={isImportModalOpen}
+  title="Import Tickets from Excel"
+  onClose={() => setIsImportModalOpen(false)}
+  size="md"
+>
+  <div className="space-y-4">
+
+    {/* File input */}
+    <input
+      type="file"
+      accept=".xlsx,.xls,.csv"
+      onChange={(e) => setFile(e.target.files?.[0] || null)}
+      className="w-full p-2 bg-gray-800 text-white border border-gray-700 rounded"
+    />
+
+    {/* File info */}
+    {file && (
+      <p className="text-sm text-gray-400">
+        Selected: {file.name}
+      </p>
+    )}
+
+    {/* Actions */}
+    <div className="flex justify-end gap-2">
+      <button
+        onClick={() => setIsImportModalOpen(false)}
+        className="px-4 py-2 bg-gray-700 text-white rounded"
+      >
+        Cancel
+      </button>
+
+      <button
+        disabled={!file || importing}
+        onClick={handleImport}
+        className="px-4 py-2 bg-pink-600 text-white rounded disabled:opacity-50"
+      >
+        {importing ? "Importing..." : "Import"}
+      </button>
+    </div>
+  </div>
+</Modal>
 
       {/* Refund Modal */}
       <Modal
