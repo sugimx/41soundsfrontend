@@ -179,7 +179,7 @@ const sendBulkTickets = async () => {
                     onRowClick={handleViewDetails}
                     actions={[
                         {
-                            label: 'View QR',
+                            label: 'View',
                             onClick: (row) => handleViewDetails(row),
                         },
                         {
