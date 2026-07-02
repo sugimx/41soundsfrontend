@@ -200,11 +200,6 @@ export default function UsersPage() {
               label: 'View',
               onClick: (row) => handleViewDetails(row),
             },
-            {
-              label: (row) => row.isActive ? 'Deactivate' : 'Activate',
-              onClick: (row) => handleToggleActive(row),
-              variant: (row) => row.isActive ? 'danger' : 'default',
-            },
           ]}
         />
       </motion.div>
