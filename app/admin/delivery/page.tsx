@@ -202,6 +202,21 @@ export default function TicketsPage() {
                             label: 'WhatsApp',
                             render: value => value ? 'Sent' : 'Pending'
                         },
+                         {
+                            key: 'status',
+                            label: 'Status',
+                            render: (value: string) => (
+                                <span
+                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                    value === 'VALID'
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-red-100 text-red-700'
+                                }`}
+                                >
+                                {value}
+                                </span>
+                            ),
+                        }
                     ]}
                     data={filteredTickets}
                     isLoading={isLoading}

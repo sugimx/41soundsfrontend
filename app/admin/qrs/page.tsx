@@ -12,6 +12,11 @@ interface ScanResult {
   name?: string;
   email?: string;
   ticketTier?: string;
+  quantity?: number;
+  unitPrice?: number;
+  totalPrice?: number;
+  seatSection?: string;
+  seatNumber?: string;
   ticketId?: string;
 }
 
@@ -29,7 +34,7 @@ export default function QRPage() {
     if (scannerRef.current) {
       try {
         await scannerRef.current.clear();
-      } catch {}
+      } catch { }
       scannerRef.current = null;
     }
     isProcessingRef.current = false;
@@ -141,11 +146,10 @@ export default function QRPage() {
 
         {result && (
           <div
-            className={`p-8 rounded-lg border-2 ${
-              result.valid
+            className={`p-8 rounded-lg border-2 ${result.valid
                 ? 'bg-green-600/10 border-green-600/30'
                 : 'bg-red-600/10 border-red-600/30'
-            }`}
+              }`}
           >
             <div className="flex items-center gap-4 mb-6">
               {result.valid ? (
@@ -156,9 +160,8 @@ export default function QRPage() {
 
               <div>
                 <h2
-                  className={`text-3xl font-bold ${
-                    result.valid ? 'text-green-400' : 'text-red-400'
-                  }`}
+                  className={`text-3xl font-bold ${result.valid ? 'text-green-400' : 'text-red-400'
+                    }`}
                 >
                   {result.valid ? 'Valid Ticket' : 'Invalid Ticket'}
                 </h2>
@@ -167,6 +170,38 @@ export default function QRPage() {
                 </p>
               </div>
             </div>
+
+            {result.valid && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-gray-700 pt-6">
+                <div>
+                  <p className="text-gray-400 text-sm">Name</p>
+                  <p className="text-white text-lg font-semibold">
+                    {result.name || '-'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-gray-400 text-sm">Email</p>
+                  <p className="text-white break-all">
+                    {result.email || '-'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-gray-400 text-sm">Ticket Tier</p>
+                  <p className="text-white font-semibold">
+                    {result.ticketTier || '-'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-gray-400 text-sm">Ticket ID</p>
+                  <p className="text-white font-mono">
+                    {result.ticketId || '-'}
+                  </p>
+                </div>
+              </div>
+            )}
 
             {!result.valid && (
               <div className="text-center">
