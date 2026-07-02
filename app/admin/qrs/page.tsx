@@ -25,12 +25,13 @@ export default function QRPage() {
 
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const isProcessingRef = useRef(false);
-
+  const scannerStoppedRef = useRef(false);
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState('');
   const [isScanning, setIsScanning] = useState(true);
 
   const stopScanner = async () => {
+    scannerStoppedRef.current = true;
     if (scannerRef.current) {
       try {
         await scannerRef.current.clear();
@@ -46,6 +47,7 @@ export default function QRPage() {
     await stopScanner();
 
     isProcessingRef.current = false;
+    scannerStoppedRef.current = false;
 
     const scanner = new Html5QrcodeScanner(
       'reader',
@@ -57,27 +59,25 @@ export default function QRPage() {
 
     scanner.render(
       async (decodedText) => {
+        if (scannerStoppedRef.current) return;
         if (isProcessingRef.current) return;
         isProcessingRef.current = true;
-
+        scannerStoppedRef.current = true;
         setIsScanning(false);
+        await stopScanner(); // stop after success
         setError('');
 
         try {
           const data = await adminApi.qrScanner(token, decodedText);
           setResult(data);
-
-          await stopScanner(); // stop after success
         } catch (err) {
           setResult({
             valid: false,
             message: 'Unable to validate ticket',
           });
-
           setError('Failed to validate ticket');
-
-
-          await stopScanner();
+        } finally {
+          isProcessingRef.current = false;
         }
       },
       () => {
@@ -102,6 +102,7 @@ export default function QRPage() {
     setIsScanning(true);
 
     isProcessingRef.current = false;
+    scannerStoppedRef.current = false;
 
     startScanner();
   };
@@ -147,8 +148,8 @@ export default function QRPage() {
         {result && (
           <div
             className={`p-8 rounded-lg border-2 ${result.valid
-                ? 'bg-green-600/10 border-green-600/30'
-                : 'bg-red-600/10 border-red-600/30'
+              ? 'bg-green-600/10 border-green-600/30'
+              : 'bg-red-600/10 border-red-600/30'
               }`}
           >
             <div className="flex items-center gap-4 mb-6">
@@ -202,14 +203,14 @@ export default function QRPage() {
                 </div>
 
                 <div>
-                  <p className="text-gray-400 text-sm">Ticket Tier</p>
+                  <p className="text-gray-400 text-sm">Quantity</p>
                   <p className="text-white font-semibold">
                     {result.quantity || '-'}
                   </p>
                 </div>
 
                 <div>
-                  <p className="text-gray-400 text-sm">Ticket Tier</p>
+                  <p className="text-gray-400 text-sm">Seat Number</p>
                   <p className="text-white font-semibold">
                     {result.seatNumber || '-'}
                   </p>
