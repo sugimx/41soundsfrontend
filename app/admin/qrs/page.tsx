@@ -188,6 +188,13 @@ export default function QRPage() {
                 </div>
 
                 <div>
+                  <p className="text-gray-400 text-sm">Ticket ID</p>
+                  <p className="text-white font-mono">
+                    {result.ticketId || '-'}
+                  </p>
+                </div>
+
+                <div>
                   <p className="text-gray-400 text-sm">Ticket Tier</p>
                   <p className="text-white font-semibold">
                     {result.ticketTier || '-'}
@@ -195,11 +202,19 @@ export default function QRPage() {
                 </div>
 
                 <div>
-                  <p className="text-gray-400 text-sm">Ticket ID</p>
-                  <p className="text-white font-mono">
-                    {result.ticketId || '-'}
+                  <p className="text-gray-400 text-sm">Ticket Tier</p>
+                  <p className="text-white font-semibold">
+                    {result.quantity || '-'}
                   </p>
                 </div>
+
+                <div>
+                  <p className="text-gray-400 text-sm">Ticket Tier</p>
+                  <p className="text-white font-semibold">
+                    {result.seatNumber || '-'}
+                  </p>
+                </div>
+
               </div>
             )}
 
