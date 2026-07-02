@@ -215,6 +215,9 @@ export const adminApi = {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        role: 'admin',
+      }),
     });
 
     const data = (await response.json()) as ApiResponse<User>;
