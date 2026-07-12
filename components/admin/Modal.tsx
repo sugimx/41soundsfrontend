@@ -10,6 +10,7 @@ interface ModalProps {
   onClose: () => void;
   children: ReactNode;
   size?: 'sm' | 'md' | 'lg';
+  bodyClassName?: string;
 }
 
 const sizeClasses = {
@@ -18,7 +19,7 @@ const sizeClasses = {
   lg: 'max-w-2xl',
 };
 
-export function Modal({ isOpen, title, onClose, children, size = 'md' }: ModalProps) {
+export function Modal({ isOpen, title, onClose, children, size = 'md', bodyClassName }: ModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -48,7 +49,7 @@ export function Modal({ isOpen, title, onClose, children, size = 'md' }: ModalPr
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-96 overflow-y-auto">{children}</div>
+        <div className={`p-6 max-h-96 overflow-y-auto ${bodyClassName ?? ''}`.trim()}>{children}</div>
       </motion.div>
     </motion.div>
   );
