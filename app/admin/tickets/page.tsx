@@ -11,11 +11,12 @@ import { Search, Filter, Plus } from 'lucide-react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 
-const TICKET_TIERS = ['Gold', 'Platinum', 'VIP', 'MVIP'];
+const TICKET_TIERS = ['Standing', 'Gold', 'Platinum', 'VIP', 'MVIP'];
 const TICKET_STATUSES = ['pending', 'completed', 'refunded', 'cancelled'];
 
 // Map pricing data to tier prices
 const TIER_PRICES: Record<string, number> = {
+  Standing: 300,
   Gold: 800,
   Platinum: 1200,
   VIP: 2000,

@@ -173,6 +173,7 @@ export default function AdminDashboard() {
       >
         <Chart
           data={[
+            { name: 'Standing', value: stats?.ticketsByTier?.Standing || 0 },
             { name: 'Gold', value: stats?.ticketsByTier?.Gold || 0 },
             { name: 'Platinum', value: stats?.ticketsByTier?.Platinum || 0 },
             { name: 'VIP', value: stats?.ticketsByTier?.VIP || 0 },

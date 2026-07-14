@@ -60,6 +60,7 @@ export default function AnalyticsPage() {
           retentionRate: stats?.totalUsers ? `${Math.min(95, Math.round((stats.totalUsers / (stats.totalUsers + 5)) * 100))}%` : "0%",
         },
         ticketDistribution: {
+          Standing: analytics?.ticketsByTier?.Standing || 0,
           Gold: analytics?.ticketsByTier?.Gold || 0,
           Platinum: analytics?.ticketsByTier?.Platinum || 0,
           VIP: analytics?.ticketsByTier?.VIP || 0,
@@ -72,6 +73,7 @@ export default function AnalyticsPage() {
           Refunded: analytics?.paymentStats?.refunded || 0,
         },
         revenueByTier: {
+          Standing: analytics?.revenueByTier?.Standing || 0,
           Gold: analytics?.revenueByTier?.Gold || 0,
           Platinum: analytics?.revenueByTier?.Platinum || 0,
           VIP: analytics?.revenueByTier?.VIP || 0,
@@ -79,7 +81,6 @@ export default function AnalyticsPage() {
         },
       };
 
-      // Create CSV content
       const csvContent = `41 Sounds - Analytics Report
 Generated: ${reportData.generatedAt}
 Date Range: ${reportData.dateRange.startDate} to ${reportData.dateRange.endDate}
@@ -91,6 +92,7 @@ Average Ticket Value,₹${reportData.metrics.avgTicketValue.toLocaleString('en-I
 Retention Rate,${reportData.metrics.retentionRate}
 
 TICKET DISTRIBUTION
+Standing,${reportData.ticketDistribution.Standing}
 Gold,${reportData.ticketDistribution.Gold}
 Platinum,${reportData.ticketDistribution.Platinum}
 VIP,${reportData.ticketDistribution.VIP}
@@ -103,6 +105,7 @@ Failed,${reportData.paymentStatus.Failed}
 Refunded,${reportData.paymentStatus.Refunded}
 
 REVENUE BY TIER
+Standing,₹${reportData.revenueByTier.Standing.toLocaleString('en-IN')}
 Gold,₹${reportData.revenueByTier.Gold.toLocaleString('en-IN')}
 Platinum,₹${reportData.revenueByTier.Platinum.toLocaleString('en-IN')}
 VIP,₹${reportData.revenueByTier.VIP.toLocaleString('en-IN')}
@@ -234,6 +237,7 @@ MVIP,₹${reportData.revenueByTier.MVIP.toLocaleString('en-IN')}`;
       >
         <Chart
           data={[
+            { name: 'Standing', value: analytics?.revenueByTier?.Standing || 0 },
             { name: 'Gold', value: analytics?.revenueByTier?.Gold || 0 },
             { name: 'Platinum', value: analytics?.revenueByTier?.Platinum || 0 },
             { name: 'VIP', value: analytics?.revenueByTier?.VIP || 0 },
@@ -251,6 +255,7 @@ MVIP,₹${reportData.revenueByTier.MVIP.toLocaleString('en-IN')}`;
           <h3 className="text-lg font-bold text-white mb-6">Revenue Summary</h3>
           <div className="space-y-4">
             {[
+              { tier: 'Standing', revenue: analytics?.revenueByTier?.Standing || 0, tickets: analytics?.ticketsByTier?.Standing || 0 },
               { tier: 'Gold', revenue: analytics?.revenueByTier?.Gold || 0, tickets: analytics?.ticketsByTier?.Gold || 0 },
               { tier: 'Platinum', revenue: analytics?.revenueByTier?.Platinum || 0, tickets: analytics?.ticketsByTier?.Platinum || 0 },
               { tier: 'VIP', revenue: analytics?.revenueByTier?.VIP || 0, tickets: analytics?.ticketsByTier?.VIP || 0 },
@@ -277,6 +282,7 @@ MVIP,₹${reportData.revenueByTier.MVIP.toLocaleString('en-IN')}`;
       >
         <Chart
           data={[
+            { name: 'Standing', value: analytics?.ticketsByTier?.Standing || 0 },
             { name: 'Gold', value: analytics?.ticketsByTier?.Gold || 0 },
             { name: 'Platinum', value: analytics?.ticketsByTier?.Platinum || 0 },
             { name: 'VIP', value: analytics?.ticketsByTier?.VIP || 0 },
